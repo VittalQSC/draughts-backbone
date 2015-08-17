@@ -1,6 +1,22 @@
+#draughts-board-demonstration {
+	width: 560px;
+}
+
 #draughts-board {
-	width: 320px;
-	height: 320px;
+	width: 560px;
+	height: 560px;
+	border: 20px solid brown;
+	border-radius: 3%;
+}
+
+#game-controller {
+	width: 25%;
+	display: block;
+	margin: 10px auto;
+}
+
+.ctrl-btn {
+	width: 48%;
 }
 
 .row {
