@@ -17,10 +17,12 @@ $(function(){
     App.Views.Game = Backbone.View.extend({
         initialize: function () {
             this.createBoard();
-            this.on('click #next-step');
+
             this.collection.add(new App.Models.Step([1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2]));
             this.collection.add(new App.Models.Step([1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,2,2,2,2,0,2,2,2,2,2,2,2,2]));
             this.collection.add(new App.Models.Step([1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,0,0,0,0,2,2,2,2,0,2,2,2,2,2,2,2,2]));
+            this.collection.add(new App.Models.Step([1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,0,2,0,0,2,0,2,2,0,2,2,2,2,2,2,2,2]));
+
             this.render();
         },
         createBoard: function() {
@@ -28,10 +30,7 @@ $(function(){
             var markForBlackSquares = 0;
             for(var i = 8; i > 0; i--) {
                 $('#draughts-board').append('<div id="'+ i +'-row" class="row"></div>');
-                if(i % 2 == 0)
-                    firstSquareIsWhite = true;
-                else
-                    firstSquareIsWhite = false;
+                firstSquareIsWhite = i % 2;
                 for(var j = 1; j < 9; j++) {
                     var squareColor = this.determineSquareColor(firstSquareIsWhite,j);
                     var squareCoordinate =  i.toString() + String.fromCharCode(64+j);
@@ -73,8 +72,8 @@ $(function(){
         render: function(){
             var currPosition = this.collection.at(this.currStepNum);
             for(var i = 0; i < 32; i++) {
-                var figure = this.determineFigure(currPosition.get(i)); 
-                if(figure != "undefined" && figure != "empty")
+                var figure = this.determineFigure(currPosition.get(i));
+                if(figure != "empty")
                     this.$el.find('.'+i+'-mark').addClass(figure);
                 else {
                     this.$el.find('.'+i+'-mark').removeClass("white-figure white-queen black-figure black-queen");
