@@ -8,7 +8,8 @@ $(function(){
 
     App.Models.Step = Backbone.Model.extend({
         default: {
-            position: '[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]'
+            position: '[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]',
+            positionNumberInTheGame: 0
         }
     });
 
@@ -18,10 +19,30 @@ $(function(){
         initialize: function () {
             this.createBoard();
 
-            this.collection.add(new App.Models.Step([1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2]));
-            this.collection.add(new App.Models.Step([1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,2,2,2,2,0,2,2,2,2,2,2,2,2]));
-            this.collection.add(new App.Models.Step([1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,0,0,0,0,2,2,2,2,0,2,2,2,2,2,2,2,2]));
-            this.collection.add(new App.Models.Step([1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,0,2,0,0,2,0,2,2,0,2,2,2,2,2,2,2,2]));
+            this.collection.add(new App.Models.Step({
+                position: [1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2],
+                positionNum: 0
+            }));
+            this.collection.add(new App.Models.Step({
+                position: [1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,2,2,2,2,0,2,2,2,2,2,2,2,2],
+                positionNum: 1
+            }));
+            this.collection.add(new App.Models.Step({
+                position: [1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,0,0,0,0,2,2,2,2,0,2,2,2,2,2,2,2,2],
+                positionNum: 2
+            }));
+            this.collection.add(new App.Models.Step({
+                position: [1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,0,2,0,0,2,0,2,2,0,2,2,2,2,2,2,2,2],
+                positionNum: 3
+            }));
+            this.collection.add(new App.Models.Step({
+                position: [1,1,1,1,1,1,1,1,0,1,1,1,1,0,2,0,2,0,0,0,0,2,2,0,2,2,2,2,2,2,2,2],
+                positionNum: 4
+            }));
+            this.collection.add(new App.Models.Step({
+                position: [1,1,1,1,1,1,1,1,0,1,0,1,1,0,0,0,2,0,0,1,0,2,2,0,2,2,2,2,2,2,2,2],
+                positionNum: 5
+            }));
 
             this.render();
         },
@@ -72,7 +93,7 @@ $(function(){
         render: function(){
             var currPosition = this.collection.at(this.currStepNum);
             for(var i = 0; i < 32; i++) {
-                var figure = this.determineFigure(currPosition.get(i));
+                var figure = this.determineFigure(currPosition.get("position")[i]);
                 if(figure != "empty")
                     this.$el.find('.'+i+'-mark').addClass(figure);
                 else {
@@ -82,9 +103,9 @@ $(function(){
         },
         determineFigure: function(square) {
             if(square == 1) return "white-figure";
-            else if(square == 2) return "black-figure"
-            else if(square == 3) return "white-queen"
-            else if(square == 4) return "black-queen"
+            else if(square == 2) return "black-figure";
+            else if(square == 3) return "white-queen";
+            else if(square == 4) return "black-queen";
             else if(square == 0) return "empty";
             else return "empty";
          }
