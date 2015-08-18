@@ -1,5 +1,15 @@
 #draughts-board-demonstration {
+	width: 900px;
+}
+
+#game-player {
 	width: 560px;
+	display: inline-block;
+}
+
+#game-steps {
+	float: right;
+	display: inline-block;
 }
 
 #draughts-board {

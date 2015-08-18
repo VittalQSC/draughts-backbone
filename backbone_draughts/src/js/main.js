@@ -76,7 +76,6 @@ $(function(){
                 return "white";
 
     },
-        el: '#draughts-board-demonstration',
         events: {
             "click #next-step" : "nextStep",
             "click #prev-step" : "prevStep"
@@ -113,7 +112,7 @@ $(function(){
 
     var game_positions = new App.Collections.Board();
 
-    window.draughts_board_demonstration = new App.Views.Game({collection: game_positions});
+    window.draughts_board_demonstration = new App.Views.Game({collection: game_positions, el: '#draughts-board-demonstration'});
 
 
 });
