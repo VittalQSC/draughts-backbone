@@ -10,13 +10,12 @@
 #game-steps {
 	float: right;
 	display: inline-block;
+	width: 300px;
 }
 
 #draughts-board {
 	width: 560px;
 	height: 560px;
-	border: 20px solid brown;
-	border-radius: 3%;
 }
 
 #game-controller {

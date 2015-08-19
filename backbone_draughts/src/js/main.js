@@ -43,8 +43,48 @@ $(function(){
                 position: [1,1,1,1,1,1,1,1,0,1,0,1,1,0,0,0,2,0,0,1,0,2,2,0,2,2,2,2,2,2,2,2],
                 positionNum: 5
             }));
+            this.collection.add(new App.Models.Step({
+                position: [1,1,1,1,1,1,1,1,0,1,0,1,1,0,0,2,2,0,0,0,0,2,0,0,2,2,2,2,2,2,2,2],
+                positionNum: 6
+            }));
 
+            this.fillGameStepsSidebar();
             this.render();
+        },
+        fillGameStepsSidebar: function(){
+            for(var i = 1; i < this.collection.length; i++) {
+                this.insertStepIntoStepsSidebar(this.collection.at(i-1).get("position"),this.collection.at(i).get("position"));
+            }
+        },
+        insertStepIntoStepsSidebar: function(currStep,nextStep){
+            var step = this.determineStep(currStep,nextStep);
+            $('#game-steps').append('<li>'+step+'</li>');
+
+        },
+        determineStep: function(currStep,nextStep) {
+            var currStepCoordinate;
+            var nextStepCoordinate;
+            var steppingFigure;
+            // VERY BAD REALIZATION
+            for(var i = 0; i < 32 && !(nextStepCoordinate === 'undefined'); i++) {
+                if(currStep[i] == 0 &&  nextStep[i] != 0) {
+
+                    steppingFigure = nextStep[i];
+
+                    var changedSquare = this.$el.find('.' + i + '-mark');
+                    var squareClassName = changedSquare.attr('id');
+                    nextStepCoordinate = changedSquare.attr('id').substr(0,squareClassName.indexOf('-'));
+                }
+            }
+            for(var i = 0; i < 32 && !(currStepCoordinate === 'undefined'); i++) {
+               if(currStep[i] == steppingFigure &&  nextStep[i] == 0 ) {
+                   var changedSquare = this.$el.find('.' + i + '-mark');
+                   var squareClassName = changedSquare.attr('id');
+                   currStepCoordinate = changedSquare.attr('id').substr(0,squareClassName.indexOf('-'));
+
+               }
+            }
+            return currStepCoordinate + '-' + nextStepCoordinate;
         },
         createBoard: function() {
             var firstSquareIsWhite;
