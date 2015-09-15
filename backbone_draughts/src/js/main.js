@@ -8,102 +8,141 @@ $(function(){
 
     App.Models.Step = Backbone.Model.extend({
         default: {
-            position: '[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]',
-            positionNumberInTheGame: 0
+            index: 1,
+            white: {
+                from: 1,
+                to: 1,
+                whitePosition: {
+                    whites: [],
+                    whiteQueens: [],
+                    blacks: [],
+                    blackQueens: []
+                }
+            },
+            black: {
+                from: 1,
+                to: 1,
+                blackPosition: {
+                    whites: [],
+                    whiteQueens: [],
+                    blacks: [],
+                    blackQueens: []
+                }
+            }
         }
     });
 
-    App.Collections.Board = Backbone.Collection.extend({ model: App.Models.Step });
+    App.Collections.Board = Backbone.Collection.extend({
+        model: App.Models.Step
+    });
 
     App.Views.Game = Backbone.View.extend({
+        brdSize: 8,
         initialize: function () {
-            this.createBoard();
+            this.createBoard(this.brdSize);
 
             this.collection.add(new App.Models.Step({
-                position: [1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,2,2,2,2,2,2,2,2,2,2,2,2],
-                positionNum: 0
-            }));
-            this.collection.add(new App.Models.Step({
-                position: [1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,2,2,2,2,0,2,2,2,2,2,2,2,2],
-                positionNum: 1
-            }));
-            this.collection.add(new App.Models.Step({
-                position: [1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,0,0,0,0,2,2,2,2,0,2,2,2,2,2,2,2,2],
-                positionNum: 2
-            }));
-            this.collection.add(new App.Models.Step({
-                position: [1,1,1,1,1,1,1,1,0,1,1,1,1,0,0,0,2,0,0,2,0,2,2,0,2,2,2,2,2,2,2,2],
-                positionNum: 3
-            }));
-            this.collection.add(new App.Models.Step({
-                position: [1,1,1,1,1,1,1,1,0,1,1,1,1,0,2,0,2,0,0,0,0,2,2,0,2,2,2,2,2,2,2,2],
-                positionNum: 4
-            }));
-            this.collection.add(new App.Models.Step({
-                position: [1,1,1,1,1,1,1,1,0,1,0,1,1,0,0,0,2,0,0,1,0,2,2,0,2,2,2,2,2,2,2,2],
-                positionNum: 5
-            }));
-            this.collection.add(new App.Models.Step({
-                position: [1,1,1,1,1,1,1,1,0,1,0,1,1,0,0,2,2,0,0,0,0,2,0,0,2,2,2,2,2,2,2,2],
-                positionNum: 6
-            }));
-
-            this.fillGameStepsSidebar();
-            this.render();
-        },
-        fillGameStepsSidebar: function(){
-            for(var i = 1; i < this.collection.length; i++) {
-                this.insertStepIntoStepsSidebar(this.collection.at(i-1).get("position"),this.collection.at(i).get("position"));
-            }
-        },
-        insertStepIntoStepsSidebar: function(currStep,nextStep){
-            var step = this.determineStep(currStep,nextStep);
-            $('#game-steps').append('<li>'+step+'</li>');
-
-        },
-        determineStep: function(currStep,nextStep) {
-            var currStepCoordinate;
-            var nextStepCoordinate;
-            var steppingFigure;
-            // VERY BAD REALIZATION
-            for(var i = 0; i < 32 && !(nextStepCoordinate === 'undefined'); i++) {
-                if(currStep[i] == 0 &&  nextStep[i] != 0) {
-
-                    steppingFigure = nextStep[i];
-
-                    var changedSquare = this.$el.find('.' + i + '-mark');
-                    var squareClassName = changedSquare.attr('id');
-                    nextStepCoordinate = changedSquare.attr('id').substr(0,squareClassName.indexOf('-'));
-                }
-            }
-            for(var i = 0; i < 32 && !(currStepCoordinate === 'undefined'); i++) {
-               if(currStep[i] == steppingFigure &&  nextStep[i] == 0 ) {
-                   var changedSquare = this.$el.find('.' + i + '-mark');
-                   var squareClassName = changedSquare.attr('id');
-                   currStepCoordinate = changedSquare.attr('id').substr(0,squareClassName.indexOf('-'));
-
-               }
-            }
-            return currStepCoordinate + '-' + nextStepCoordinate;
-        },
-        createBoard: function() {
-            var firstSquareIsWhite;
-            var markForBlackSquares = 0;
-            for(var i = 8; i > 0; i--) {
-                $('#draughts-board').append('<div id="'+ i +'-row" class="row"></div>');
-                firstSquareIsWhite = i % 2;
-                for(var j = 1; j < 9; j++) {
-                    var squareColor = this.determineSquareColor(firstSquareIsWhite,j);
-                    var squareCoordinate =  i.toString() + String.fromCharCode(64+j);
-                    $('#'+ i +'-row').append('<div id="'+ squareCoordinate +'-square" class="board-square '+squareColor+'-square"></div>');
-                    if(squareColor === 'black') {
-                        $('#' + squareCoordinate+'-square').addClass(markForBlackSquares + "-mark");
-                        markForBlackSquares++;
+                index: 1,
+                white: {
+                    from: 1,
+                    to: 1,
+                    whitePosition: {
+                        whites: [1,2,3,4,5],
+                        whiteQueens: [6,7],
+                        blacks: [8,9,10],
+                        blackQueens: [11,12,13]
+                    }
+                },
+                black: {
+                    from: 3,
+                    to: 4,
+                    blackPosition: {
+                        whites: [1,2,3,4,5],
+                        whiteQueens: [6,9],
+                        blacks: [],
+                        blackQueens: [11,12,13]
                     }
                 }
+            }));
+            this.collection.add(new App.Models.Step({
+                index: 2,
+                white: {
+                    from: 5,
+                    to: 6,
+                    whitePosition: {
+                        whites: [],
+                        whiteQueens: [],
+                        blacks: [],
+                        blackQueens: []
+                    }
+                },
+                black: {
+                    from: 8,
+                    to: 7,
+                    blackPosition: {
+                        whites: [],
+                        whiteQueens: [],
+                        blacks: [],
+                        blackQueens: []
+                    }
+                }
+            }));
+
+
+            this.fillGameStepsSidebar();
+            //this.render();
+        },
+        fillGameStepsSidebar: function(){
+            for(var i = 0; i < this.collection.length; i++) {
+                this.insertHalfStepsIntoStepsSidebar(this.collection.at(i));
             }
         },
-        determineSquareColor: function determineSquareColor(firstSquareIsWhite,j){
+        insertHalfStepsIntoStepsSidebar: function(step){
+            var halfSteps = this.determineStep(step);
+            $('#game-steps').append('<li id="' + step.get('index') + '-step" class="step">'+halfSteps.whiteHalfStep+'</li>');
+            $('#game-steps').append('<li id="' + step.get('index') + '-step" class="step">'+halfSteps.blackHalfStep+'</li>');
+        },
+        determineStep: function(step) {
+            var answer = {
+                whiteHalfStep: {},
+                blackHalfStep: {}
+            };
+            var color = ['white','black'];
+            //hor array just a wow mind games 9k
+            var hor = ['B','D','F','H','A','C','E','G'];
+            for(var i = 0; i < 2; i++) {
+                var firstCoordinate = step.get(color[i]).from;
+                var secondCoordinate = step.get(color[i]).to;
+                var firstVerticalCoordinate = Math.floor(Math.floor(firstCoordinate/4) + 1);
+                //and here 9k
+                var firstHorizontalCoordinate = hor[firstCoordinate%9-1];
+                var secondVerticalCoordinate = Math.floor( Math.floor(secondCoordinate/4) + 1);
+                //and here 9k
+                var secondHorizontalCoordinate =  hor[secondCoordinate%9-1];
+                var halfStep = firstHorizontalCoordinate.toString() + firstVerticalCoordinate.toString() + "-"
+                    + secondHorizontalCoordinate.toString() + secondVerticalCoordinate.toString();
+                if(color[i] === 'white') answer.whiteHalfStep = halfStep;
+                else if(color[i] === 'black') answer.blackHalfStep = halfStep;
+            }
+            return answer;
+        },
+        createBoard: function(brdSize) {
+            var firstSquareIsWhite;
+            for(var i = brdSize; i >= 1; i--) {
+                $('#draughts-board').append('<div id="'+ i +'-row" class="'+ this.getRowClassName() +'"></div>');
+                firstSquareIsWhite = (i % 2 == 0);
+                for(var j = 1; j < brdSize + 1; j++) {
+                    var squareColor = this.determineSquareColor(firstSquareIsWhite,j);
+                    var squareCoordinate =  this.determineSquareCoordinate(i,j);
+                    var squareClassName = this.getSquareClassName(squareCoordinate);
+                    if(squareColor === 'black')
+                        $('#'+ i +'-row').append('<div id="'+ squareCoordinate +'-square" class="' + squareClassName + ' '+squareColor+'-square"></div>');
+                    else
+                        $('#'+ i +'-row').append('<div class="' + squareClassName + ' '+squareColor+'-square"></div>');
+                }
+            }
+        },
+        determineSquareColor: function (firstSquareIsWhite,j){
         if(firstSquareIsWhite)
             if( j % 2 != 0)
                 return "white";
@@ -116,21 +155,35 @@ $(function(){
                 return "white";
 
     },
-        events: {
-            "click #next-step" : "nextStep",
-            "click #prev-step" : "prevStep"
+        determineSquareCoordinate: function(i,j) {
+            return i.toString() + String.fromCharCode(64+j);
         },
-        currStepNum: 0,
+        getSquareClassName: function(squareCoordinate) {
+            return 'board8x8-square';
+        },
+        getRowClassName: function() {
+            return 'row8x8';
+        },
+        events: {
+            "click #next-step"   : "nextStep",
+            "click #prev-step"   : "prevStep"
+        },
+        colorCurrentStep: function(){
+            $('.step').removeClass('curr-step');
+            if(this.collection.currStepNum != 0) {
+                $('#'+ this.collection.currStepNum +'-step').addClass('curr-step');
+            }
+        },
         nextStep: function(){
-            if(this.currStepNum < this.collection.length - 1) this.currStepNum++;
+            if(this.collection.currStepNum < this.collection.length - 1) this.collection.currStepNum++;
             this.render();
         },
         prevStep: function(){
-            if(this.currStepNum > 0) this.currStepNum--;
+            if(this.collection.currStepNum > 0) this.collection.currStepNum--;
             this.render();
         },
         render: function(){
-            var currPosition = this.collection.at(this.currStepNum);
+            var currPosition = this.collection.at(this.collection.currStepNum);
             for(var i = 0; i < 32; i++) {
                 var figure = this.determineFigure(currPosition.get("position")[i]);
                 if(figure != "empty")
@@ -150,9 +203,44 @@ $(function(){
          }
     });
 
+    App.Views.Game10x10 = App.Views.Game.extend({
+        brdSize: 10,
+        determineSquareCoordinate: function(i,j) {
+            return 5*(i - 1) + Math.ceil(Math.floor(j/2));
+        },
+        getSquareClassName: function(squareCoordinate) {
+            return 'board10x10-square';
+        },
+        getRowClassName: function() {
+            return 'row10x10';
+        },
+        determineStep: function(step) {
+            var answer = {
+                whiteHalfStep: {},
+                blackHalfStep: {}
+            };
+            var color = ['white','black'];
+            for(var i = 0; i < 2; i++) {
+                var firstCoordinate = step.get(color[i]).from;
+                var secondCoordinate = step.get(color[i]).to;
+                var halfStep = firstCoordinate.toString() + "-"
+                    + secondCoordinate.toString();
+                if(color[i] === 'white') answer.whiteHalfStep = halfStep;
+                else if(color[i] === 'black') answer.blackHalfStep = halfStep;
+
+            }
+            return answer;
+        }
+    });
+
+    App.Views.Game8x8 = App.Views.Game.extend({
+    });
+
+
     var game_positions = new App.Collections.Board();
 
-    window.draughts_board_demonstration = new App.Views.Game({collection: game_positions, el: '#draughts-board-demonstration'});
+    //window.draughts_board_demonstration = new App.Views.Game({collection: game_positions, el: '#draughts-board-demonstration'});
+    window.draughts_board_demonstration = new App.Views.Game8x8({collection: game_positions, el: '#draughts-board-demonstration'});
 
 
 });

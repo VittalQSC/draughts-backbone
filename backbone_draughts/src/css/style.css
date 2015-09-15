@@ -7,6 +7,10 @@
 	display: inline-block;
 }
 
+.curr-step {
+	background: lightskyblue;
+}
+
 #game-steps {
 	float: right;
 	display: inline-block;
@@ -28,12 +32,23 @@
 	width: 48%;
 }
 
-.row {
+.row8x8 {
 	height: 12.5%;
 }
 
-.board-square {
-	width: 12.5%;
+.row10x10 {
+	height: 10%;
+}
+
+.board8x8-square {
+	 width: 12.5%;
+	 height: 100%;
+	 text-align: center;
+	 display: inline-block;
+}
+
+.board10x10-square {
+	width: 10%;
 	height: 100%;
 	text-align: center;
 	display: inline-block;
