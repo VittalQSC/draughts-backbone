@@ -45,18 +45,18 @@ $(function(){
                 index: 1,
                 white: {
                     from: 1,
-                    to: 1,
-                    whitePosition: {
-                        whites: [1,2,3,4,5],
-                        whiteQueens: [6,7],
-                        blacks: [8,9,10],
-                        blackQueens: [11,12,13]
+                    to: 2,
+                    position: {
+                        whites: [1,2,3,4,5,6,7,8,9,10,11,12],
+                        whiteQueens: [13],
+                        blacks: [32,31,30,29,28,27,26,25,24],
+                        blackQueens: [15]
                     }
                 },
                 black: {
                     from: 3,
                     to: 4,
-                    blackPosition: {
+                    position: {
                         whites: [1,2,3,4,5],
                         whiteQueens: [6,9],
                         blacks: [],
@@ -90,7 +90,7 @@ $(function(){
 
 
             this.fillGameStepsSidebar();
-            //this.render();
+            this.render(1,'white');
         },
         fillGameStepsSidebar: function(){
             for(var i = 0; i < this.collection.length; i++) {
@@ -108,23 +108,41 @@ $(function(){
                 blackHalfStep: {}
             };
             var color = ['white','black'];
-            //hor array just a wow mind games 9k
-            var hor = ['B','D','F','H','A','C','E','G'];
             for(var i = 0; i < 2; i++) {
                 var firstCoordinate = step.get(color[i]).from;
                 var secondCoordinate = step.get(color[i]).to;
-                var firstVerticalCoordinate = Math.floor(Math.floor(firstCoordinate/4) + 1);
+
+                var coordinate = this.convert10x10to8x8(firstCoordinate);
+                var firstVerticalCoordinate = coordinate.verticalCoordinate;
                 //and here 9k
-                var firstHorizontalCoordinate = hor[firstCoordinate%9-1];
-                var secondVerticalCoordinate = Math.floor( Math.floor(secondCoordinate/4) + 1);
+                var firstHorizontalCoordinate = coordinate.horizontalCoordinate;
+
+                coordinate = this.convert10x10to8x8(secondCoordinate);
+                var secondVerticalCoordinate = coordinate.verticalCoordinate;
                 //and here 9k
-                var secondHorizontalCoordinate =  hor[secondCoordinate%9-1];
+                var secondHorizontalCoordinate =  coordinate.horizontalCoordinate;
+
                 var halfStep = firstHorizontalCoordinate.toString() + firstVerticalCoordinate.toString() + "-"
                     + secondHorizontalCoordinate.toString() + secondVerticalCoordinate.toString();
                 if(color[i] === 'white') answer.whiteHalfStep = halfStep;
                 else if(color[i] === 'black') answer.blackHalfStep = halfStep;
             }
             return answer;
+        },
+        convert10x10to8x8: function(coordinate10x10){
+            //hor array just a wow mind games 9k
+            var hor = ['A','C','E','G','B','D','F','H'];
+            var verticalCoordinate = Math.floor((coordinate10x10-1)/4) + 1;
+            //and here 9k
+            var horizontalCoordinate = hor[(coordinate10x10-1)%8];
+            return {
+                verticalCoordinate: verticalCoordinate,
+                horizontalCoordinate: horizontalCoordinate
+            };
+// 9 3A
+        },
+        convert8x8to10x10: function(coordinate8x8){
+            // is not working now
         },
         createBoard: function(brdSize) {
             var firstSquareIsWhite;
@@ -182,15 +200,30 @@ $(function(){
             if(this.collection.currStepNum > 0) this.collection.currStepNum--;
             this.render();
         },
-        render: function(){
-            var currPosition = this.collection.at(this.collection.currStepNum);
-            for(var i = 0; i < 32; i++) {
-                var figure = this.determineFigure(currPosition.get("position")[i]);
-                if(figure != "empty")
-                    this.$el.find('.'+i+'-mark').addClass(figure);
-                else {
-                    this.$el.find('.'+i+'-mark').removeClass("white-figure white-queen black-figure black-queen");
-                }
+        putFigure: function (coordinate10x10, className) {
+            var coordinate8x8 = this.convert10x10to8x8(coordinate10x10);
+            //console.log(coordinate8x8.verticalCoordinate+coordinate8x8.horizontalCoordinate + " : " + className);
+            $('#'+coordinate8x8.verticalCoordinate+coordinate8x8.horizontalCoordinate+'-square').addClass(className);
+        },
+        render: function(index, playerColor){
+            var playerPosition = this.collection.at(index-1).get(playerColor).position;
+
+            var whites = playerPosition.whites;
+            var blacks = playerPosition.blacks;
+            var whiteQueens = playerPosition.whiteQueens;
+            var blackQueens = playerPosition.blackQueens;
+
+            for(var i = 0; i < whites.length; i++) {
+                this.putFigure(whites[i],'white-figure');
+            }
+            for(var i = 0; i < blacks.length; i++) {
+                this.putFigure(blacks[i],'black-figure');
+            }
+            for(var i = 0; i < whiteQueens.length; i++) {
+                this.putFigure(whiteQueens[i],'white-queen');
+            }
+            for(var i = 0; i < blackQueens.length; i++) {
+                this.putFigure(blackQueens[i],'black-queen');
             }
         },
         determineFigure: function(square) {
@@ -206,7 +239,7 @@ $(function(){
     App.Views.Game10x10 = App.Views.Game.extend({
         brdSize: 10,
         determineSquareCoordinate: function(i,j) {
-            return 5*(i - 1) + Math.ceil(Math.floor(j/2));
+            return 5*(i - 1) + Math.ceil(j/2);
         },
         getSquareClassName: function(squareCoordinate) {
             return 'board10x10-square';
@@ -230,6 +263,9 @@ $(function(){
 
             }
             return answer;
+        },
+        putFigure: function (coordinate10x10, className) {
+            $('#'+coordinate10x10.toString()+'-square').addClass(className);
         }
     });
 
@@ -239,8 +275,8 @@ $(function(){
 
     var game_positions = new App.Collections.Board();
 
-    //window.draughts_board_demonstration = new App.Views.Game({collection: game_positions, el: '#draughts-board-demonstration'});
     window.draughts_board_demonstration = new App.Views.Game8x8({collection: game_positions, el: '#draughts-board-demonstration'});
+    //window.draughts_board_demonstration = new App.Views.Game10x10({collection: game_positions, el: '#draughts-board-demonstration'});
 
 
 });
