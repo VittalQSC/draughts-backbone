@@ -93,7 +93,7 @@ $(function(){
                 to: 0,
                 position: {
                     whites: [],
-                    whiteKings: [1,2,3,4,5],
+                    whiteKings: [2,3,4,5],
                     blacks: [],
                     blackKings: [9,10,11,14]
                 },
@@ -206,7 +206,7 @@ $(function(){
             var blacks = playerPosition.blacks;
             var whiteKings = playerPosition.whiteKings;
             var blackKings = playerPosition.blackKings;
-            for(var i = 0; i < this.brdSize*this.brdSize/2; i++) {
+            for(var i = 1; i <= this.brdSize*this.brdSize/2; i++) {
                 this.clearSquare(i);
             }
 
