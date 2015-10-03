@@ -6,130 +6,117 @@ $(function(){
     };
 
 
-    App.Models.Step = Backbone.Model.extend({
+    App.Models.PlyDTO  = Backbone.Model.extend({
         default: {
             index: 1,
-            white: {
-                from: 1,
-                to: 1,
-                whitePosition: {
-                    whites: [],
-                    whiteQueens: [],
-                    blacks: [],
-                    blackQueens: []
-                }
+            commentBefore: 'commentBefore',
+            commentAfter: 'commentAfter',
+            rate: 'rate',
+            whiteSide: true,
+            from: 22,
+            to: 18,
+            position: {
+                whites: [],
+                whiteKings: [],
+                blacks: [],
+                blackKings: []
             },
-            black: {
-                from: 1,
-                to: 1,
-                blackPosition: {
-                    whites: [],
-                    whiteQueens: [],
-                    blacks: [],
-                    blackQueens: []
-                }
-            }
+            alternatives: []
         }
     });
 
     App.Collections.Board = Backbone.Collection.extend({
-        model: App.Models.Step
+        model: App.Models.PlyDTO
     });
 
     App.Views.Game = Backbone.View.extend({
         brdSize: 8,
-        currentPlayerColor: 'white',
         currentStep: 1,
         initialize: function () {
             this.createBoard(this.brdSize);
 
-            this.collection.add(new App.Models.Step({
+            this.collection.add(new App.Models.PlyDTO({
                 index: 1,
-                white: {
-                    from: 1,
-                    to: 2,
-                    position: {
-                        whites: [1,2,3,4,5,6,7,8,9,10,11,12],
-                        whiteQueens: [],
-                        blacks: [32,31,30,29,28,27,26,25,24],
-                        blackQueens: []
-                    }
+                commentBefore: 'commentBefore',
+                commentAfter: 'commentAfter',
+                rate: 'rate',
+                whiteSide: true,
+                from: 22,
+                to: 18,
+                position: {
+                    whites: [1,2,3,4,5,6,7,8,9,10,11,12],
+                    whiteKings: [],
+                    blacks: [32,31,30,29,28,27,26,25,24,23,22,21],
+                    blackKings: []
                 },
-                black: {
-                    from: 3,
-                    to: 4,
-                    position: {
-                        whites: [1,2,3,4,5,6,7,8,9,10,11,16],
-                        whiteQueens: [],
-                        blacks: [32,31,30,29,28,27,26,25,24],
-                        blackQueens: []
-                    }
-                }
+                alternatives: []
             }));
-            this.collection.add(new App.Models.Step({
+            this.collection.add(new App.Models.PlyDTO({
                 index: 2,
-                white: {
-                    from: 5,
-                    to: 6,
-                    position: {
-                        whites: [1,2,3],
-                        whiteQueens: [5,6],
-                        blacks: [23,15],
-                        blackQueens: []
-                    }
+                commentBefore: 'commentBefore',
+                commentAfter: 'commentAfter',
+                rate: 'rate',
+                whiteSide: true,
+                from: 9,
+                to: 13,
+                position: {
+                    whites: [1,2,3,4,5,6,7,8,13,10,11,12],
+                    whiteKings: [],
+                    blacks: [32,31,30,29,28,27,26,25,24,23,22,21],
+                    blackKings: []
                 },
-                black: {
-                    from: 8,
-                    to: 7,
-                    position: {
-                        whites: [],
-                        whiteQueens: [],
-                        blacks: [1,2,3,4],
-                        blackQueens: [23,5]
-                    }
-                }
+                alternatives: []
+            }));
+            this.collection.add(new App.Models.PlyDTO({
+                index: 3,
+                commentBefore: 'commentBefore',
+                commentAfter: 'commentAfter',
+                rate: 'rate',
+                whiteSide: false,
+                from: 21,
+                to: 19,
+                position: {
+                    whites: [1,2,3,4,5,6,7,8,13,10,11,12],
+                    whiteKings: [],
+                    blacks: [32,31,30,29,28,27,26,25,24,23,22,18],
+                    blackKings: []
+                },
+                alternatives: []
+            }));
+            this.collection.add(new App.Models.PlyDTO({
+                index: 4,
+                commentBefore: 'commentBefore',
+                commentAfter: 'commentAfter',
+                rate: 'rate',
+                whiteSide: false,
+                from: 0,
+                to: 0,
+                position: {
+                    whites: [],
+                    whiteKings: [1,2,3,4,5],
+                    blacks: [],
+                    blackKings: [9,10,11,14]
+                },
+                alternatives: []
             }));
 
 
             this.fillGameStepsSidebar();
-            this.render(1,'white');
+            this.render(1,this.collection.at(0).attributes.whiteSide);
         },
         fillGameStepsSidebar: function () {
             for(var i = 0; i < this.collection.length; i++) {
-                this.insertHalfStepsIntoStepsSidebar(this.collection.at(i));
+                this.insertPlyIntoStepsSidebar(this.collection.at(i).attributes);
             }
         },
-        insertHalfStepsIntoStepsSidebar: function (step) {
-            var halfSteps = this.determineStep(step);
-            $('#game-steps').append('<li id="' + step.get('index') + '-step" class="step">'+halfSteps.whiteHalfStep+'</li>');
-            $('#game-steps').append('<li id="' + step.get('index') + '-step" class="step">'+halfSteps.blackHalfStep+'</li>');
+        insertPlyIntoStepsSidebar: function (ply) {
+            var listEl = this.determineListEl(ply);
+            $('#game-steps').append('<li id="' + ply.index + '-step" class="step">'+ listEl +'</li>');
         },
-        determineStep: function (step) {
-            var answer = {
-                whiteHalfStep: {},
-                blackHalfStep: {}
-            };
-            var color = ['white','black'];
-            for(var i = 0; i < 2; i++) {
-                var firstCoordinate = step.get(color[i]).from;
-                var secondCoordinate = step.get(color[i]).to;
-
-                var coordinate = this.convert10x10to8x8(firstCoordinate);
-                var firstVerticalCoordinate = coordinate.verticalCoordinate;
-                //and here 9k
-                var firstHorizontalCoordinate = coordinate.horizontalCoordinate;
-
-                coordinate = this.convert10x10to8x8(secondCoordinate);
-                var secondVerticalCoordinate = coordinate.verticalCoordinate;
-                //and here 9k
-                var secondHorizontalCoordinate =  coordinate.horizontalCoordinate;
-
-                var halfStep = firstHorizontalCoordinate.toString() + firstVerticalCoordinate.toString() + "-"
-                    + secondHorizontalCoordinate.toString() + secondVerticalCoordinate.toString();
-                if(color[i] === 'white') answer.whiteHalfStep = halfStep;
-                else if(color[i] === 'black') answer.blackHalfStep = halfStep;
-            }
-            return answer;
+        determineListEl: function (ply) {
+            var from = this.convert10x10to8x8(ply.from);
+            var to = this.convert10x10to8x8(ply.to);
+            return from.horizontalCoordinate + from.verticalCoordinate + " - " + to.horizontalCoordinate + to.verticalCoordinate;
         },
         convert10x10to8x8: function (coordinate10x10) {
             //hor array just a wow mind games 9k
@@ -186,30 +173,20 @@ $(function(){
         },
         events: {
             "click #next-step"   : "nextStep",
-            "click #prev-step"   : "prevStep"
+            "click #prev-step"   : "prevStep",
         },
         nextStep: function () {
-            if(this.currentStep <= this.collection.length) {
-                if(this.currentPlayerColor === 'white') {
-                    this.currentPlayerColor = 'black';
-                    this.render(this.currentStep, this.currentPlayerColor);
-                }
-                else if(this.currentStep < this.collection.length) {
-                    this.currentPlayerColor = 'white';
-                    this.render(++this.currentStep, this.currentPlayerColor);
-                }
+            if(this.currentStep < this.collection.length) {
+                    ++this.currentStep
+                    var currentIndex = this.currentStep - 1;
+                    this.render(this.currentStep, this.collection.at(currentIndex).attributes.whiteSide);
             }
         },
         prevStep: function () {
-            if(this.currentStep >= 1) {
-                if(this.currentPlayerColor === 'white' && this.currentStep > 1) {
-                    this.currentPlayerColor = 'black';
-                    this.render(--this.currentStep,'black');
-                }
-                else {
-                    this.currentPlayerColor = 'white';
-                    this.render(this.currentStep,'white');
-                }
+            if(this.currentStep > 1) {
+                --this.currentStep
+                var currentIndex = this.currentStep - 1;
+                this.render(this.currentStep, this.collection.at(currentIndex).attributes.whiteSide);
             }
         },
         putFigure: function (coordinate10x10, className) {
@@ -223,12 +200,12 @@ $(function(){
             $('#'+coordinate8x8.verticalCoordinate+coordinate8x8.horizontalCoordinate+'-square').removeClass('white-queen');
             $('#'+coordinate8x8.verticalCoordinate+coordinate8x8.horizontalCoordinate+'-square').removeClass('black-queen');
         },
-        render: function (index, playerColor) {
-            var playerPosition = this.collection.at(index-1).get(playerColor).position;
+        render: function (index, whitePly) {
+            var playerPosition = this.collection.at(index-1).attributes.position;
             var whites = playerPosition.whites;
             var blacks = playerPosition.blacks;
-            var whiteQueens = playerPosition.whiteQueens;
-            var blackQueens = playerPosition.blackQueens;
+            var whiteKings = playerPosition.whiteKings;
+            var blackKings = playerPosition.blackKings;
             for(var i = 0; i < this.brdSize*this.brdSize/2; i++) {
                 this.clearSquare(i);
             }
@@ -239,11 +216,11 @@ $(function(){
             for(var i = 0; i < blacks.length; i++) {
                 this.putFigure(blacks[i],'black-figure');
             }
-            for(var i = 0; i < whiteQueens.length; i++) {
-                this.putFigure(whiteQueens[i],'white-queen');
+            for(var i = 0; i < whiteKings.length; i++) {
+                this.putFigure(whiteKings[i],'white-queen');
             }
-            for(var i = 0; i < blackQueens.length; i++) {
-                this.putFigure(blackQueens[i],'black-queen');
+            for(var i = 0; i < blackKings.length; i++) {
+                this.putFigure(blackKings[i],'black-queen');
             }
         }
     });
@@ -259,22 +236,8 @@ $(function(){
         getRowClassName: function() {
             return 'row10x10';
         },
-        determineStep: function(step) {
-            var answer = {
-                whiteHalfStep: {},
-                blackHalfStep: {}
-            };
-            var color = ['white','black'];
-            for(var i = 0; i < 2; i++) {
-                var firstCoordinate = step.get(color[i]).from;
-                var secondCoordinate = step.get(color[i]).to;
-                var halfStep = firstCoordinate.toString() + "-"
-                    + secondCoordinate.toString();
-                if(color[i] === 'white') answer.whiteHalfStep = halfStep;
-                else if(color[i] === 'black') answer.blackHalfStep = halfStep;
-
-            }
-            return answer;
+        determineListEl: function(ply) {
+            return ply.from + " - " + ply.to;
         },
         putFigure: function (coordinate10x10, className) {
             $('#'+coordinate10x10.toString()+'-square').addClass(className);
@@ -288,13 +251,14 @@ $(function(){
     });
 
     App.Views.Game8x8 = App.Views.Game.extend({
+
     });
 
 
     var game_positions = new App.Collections.Board();
 
-    window.draughts_board_demonstration = new App.Views.Game8x8({collection: game_positions, el: '#draughts-board-demonstration'});
     //window.draughts_board_demonstration = new App.Views.Game10x10({collection: game_positions, el: '#draughts-board-demonstration'});
+    window.draughts_board_demonstration = new App.Views.Game8x8({collection: game_positions, el: '#draughts-board-demonstration'});
 
 
 });

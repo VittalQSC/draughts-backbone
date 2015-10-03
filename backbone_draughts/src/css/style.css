@@ -13,8 +13,8 @@
 
 #game-steps {
 	float: right;
-	display: inline-block;
-	width: 300px;
+	width: 240px;
+	border: 2px solid black;
 }
 
 #draughts-board {
