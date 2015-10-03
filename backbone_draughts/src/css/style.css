@@ -17,6 +17,12 @@
 	border: 2px solid black;
 }
 
+.list-element-ply {
+	display: inline-block;
+	margin-right: 3px;
+	margin-left: 3px;
+}
+
 #draughts-board {
 	width: 560px;
 	height: 560px;

@@ -105,13 +105,15 @@ $(function(){
             this.render(1,this.collection.at(0).attributes.whiteSide);
         },
         fillGameStepsSidebar: function () {
+            var sep = ',';
             for(var i = 0; i < this.collection.length; i++) {
-                this.insertPlyIntoStepsSidebar(this.collection.at(i).attributes);
+                if(i == this.collection.length-1) sep = '.';
+                this.insertPlyIntoStepsSidebar(this.collection.at(i).attributes, sep);
             }
         },
-        insertPlyIntoStepsSidebar: function (ply) {
+        insertPlyIntoStepsSidebar: function (ply,sep) {
             var listEl = this.determineListEl(ply);
-            $('#game-steps').append('<li id="' + ply.index + '-step" class="step">'+ listEl +'</li>');
+            $('#game-steps').append('<li id="' + ply.index + '-step" class="list-element-ply">'+ listEl + sep +'</li>');
         },
         determineListEl: function (ply) {
             var from = this.convert10x10to8x8(ply.from);
