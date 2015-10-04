@@ -3,7 +3,7 @@
 }
 
 #game-player {
-	width: 560px;
+	width: 420px;
 	display: inline-block;
 }
 
@@ -15,7 +15,7 @@
 	float: right;
 	padding: 10px;
 	margin: 5px;
-	width: 440px;
+	width: 600px;
 	border: 2px solid black;
 }
 
@@ -23,11 +23,25 @@
 	display: inline-block;
 	margin-right: 3px;
 	margin-left: 3px;
+	background: powderblue;
+}
+
+.list-element-ply:hover {
+	opacity: 0.6;
+}
+
+.list-element-comment {
+	display: inline-block;
+	list-style-type: none;
+}
+
+.list-element-alternative {
+	list-style-type: none;
 }
 
 #draughts-board {
-	width: 560px;
-	height: 560px;
+	width: 420px;
+	height: 420px;
 }
 
 #game-controller {

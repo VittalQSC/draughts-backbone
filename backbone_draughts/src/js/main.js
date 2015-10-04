@@ -46,7 +46,7 @@ $(function(){
                     blacks: [32,31,30,29,28,27,26,25,24,23,22,21],
                     blackKings: []
                 },
-                alternatives: []
+                alternatives: undefined
             }));
             this.collection.add(new App.Models.PlyDTO({
                 index: 2,
@@ -61,7 +61,7 @@ $(function(){
                     blacks: [32,31,30,29,28,27,26,25,24,23,22,21],
                     blackKings: []
                 },
-                alternatives: []
+                alternatives: undefined
             }));
             this.collection.add(new App.Models.PlyDTO({
                 index: 3,
@@ -74,7 +74,7 @@ $(function(){
                     blacks: [32,31,30,29,28,27,26,25,24,23,22,18],
                     blackKings: []
                 },
-                alternatives: []
+                alternatives: undefined
             }));
             this.collection.add(new App.Models.PlyDTO({
                 index: 4,
@@ -90,7 +90,7 @@ $(function(){
                     blacks: [32,31,30,29,28,27,26,25,24,23,22,18],
                     blackKings: []
                 },
-                alternatives: []
+                alternatives: undefined
             }));
             this.collection.add(new App.Models.PlyDTO({
                 index: 5,
@@ -106,7 +106,7 @@ $(function(){
                     blacks: [32,31,30,29,28,27,26,25,24,23,22,9],
                     blackKings: []
                 },
-                alternatives: []
+                alternatives: undefined
             }));
             this.collection.add(new App.Models.PlyDTO({
                 index: 6,
@@ -122,12 +122,12 @@ $(function(){
                     blacks: [],
                     blackKings: [9,10,11,14]
                 },
-                alternatives: []
+                alternatives: [new App.Models.PlyDTO(), new App.Models.PlyDTO()]
             }));
 
 
             this.fillGameStepsSidebar();
-            this.render(1,this.collection.at(0).attributes.whiteSide);
+            this.render(1);
         },
         fillGameStepsSidebar: function () {
             var sep = ',';
@@ -154,6 +154,10 @@ $(function(){
             if(ply.commentAfter != undefined)
                 $('#game-steps').append('<li id="' + ply.index + '-commentAfter" class="list-element-comment">[ '
                      + ply.commentAfter +' ]</li>');
+
+            if(ply.alternatives != undefined)
+                $('#game-steps').append('<li id="' + ply.index + '-alternatives" class="list-element-alternative">[[ '
+                    + ply.alternatives +' ]]</li>');
         },
         determineListEl: function (ply) {
             var from = this.convert10x10to8x8(ply.from);
@@ -216,19 +220,18 @@ $(function(){
         events: {
             "click #next-step"   : "nextStep",
             "click #prev-step"   : "prevStep",
+            
         },
         nextStep: function () {
             if(this.currentStep < this.collection.length) {
                     ++this.currentStep
-                    var currentIndex = this.currentStep - 1;
-                    this.render(this.currentStep, this.collection.at(currentIndex).attributes.whiteSide);
+                    this.render(this.currentStep);
             }
         },
         prevStep: function () {
             if(this.currentStep > 1) {
                 --this.currentStep
-                var currentIndex = this.currentStep - 1;
-                this.render(this.currentStep, this.collection.at(currentIndex).attributes.whiteSide);
+                this.render(this.currentStep);
             }
         },
         putFigure: function (coordinate10x10, className) {
@@ -242,7 +245,7 @@ $(function(){
             $('#'+coordinate8x8.verticalCoordinate+coordinate8x8.horizontalCoordinate+'-square').removeClass('white-queen');
             $('#'+coordinate8x8.verticalCoordinate+coordinate8x8.horizontalCoordinate+'-square').removeClass('black-queen');
         },
-        render: function (index, whitePly) {
+        render: function (index) {
             var playerPosition = this.collection.at(index-1).attributes.position;
             var whites = playerPosition.whites;
             var blacks = playerPosition.blacks;
