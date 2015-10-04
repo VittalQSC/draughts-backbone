@@ -9,9 +9,9 @@ $(function(){
     App.Models.PlyDTO  = Backbone.Model.extend({
         default: {
             index: 1,
-            commentBefore: 'commentBefore',
-            commentAfter: 'commentAfter',
-            rate: 'rate',
+            commentBefore: undefined,
+            commentAfter: undefined,
+            rate: undefined,
             whiteSide: true,
             from: 22,
             to: 18,
@@ -37,9 +37,6 @@ $(function(){
 
             this.collection.add(new App.Models.PlyDTO({
                 index: 1,
-                commentBefore: 'commentBefore',
-                commentAfter: 'commentAfter',
-                rate: 'rate',
                 whiteSide: true,
                 from: 22,
                 to: 18,
@@ -53,10 +50,9 @@ $(function(){
             }));
             this.collection.add(new App.Models.PlyDTO({
                 index: 2,
-                commentBefore: 'commentBefore',
-                commentAfter: 'commentAfter',
+                commentBefore: 'game starting',
                 rate: 'rate',
-                whiteSide: true,
+                whiteSide: false,
                 from: 9,
                 to: 13,
                 position: {
@@ -69,12 +65,9 @@ $(function(){
             }));
             this.collection.add(new App.Models.PlyDTO({
                 index: 3,
-                commentBefore: 'commentBefore',
-                commentAfter: 'commentAfter',
-                rate: 'rate',
-                whiteSide: false,
+                whiteSide: true,
                 from: 21,
-                to: 19,
+                to: 18,
                 position: {
                     whites: [1,2,3,4,5,6,7,8,13,10,11,12],
                     whiteKings: [],
@@ -87,6 +80,38 @@ $(function(){
                 index: 4,
                 commentBefore: 'commentBefore',
                 commentAfter: 'commentAfter',
+                rate: 'rate',
+                whiteSide: false,
+                from: 10,
+                to: 14,
+                position: {
+                    whites: [1,2,3,4,5,6,7,8,13,14,11,12],
+                    whiteKings: [],
+                    blacks: [32,31,30,29,28,27,26,25,24,23,22,18],
+                    blackKings: []
+                },
+                alternatives: []
+            }));
+            this.collection.add(new App.Models.PlyDTO({
+                index: 5,
+                commentAfter: 'i dont know the difference between this and next comment,' +
+                ' how can i learn, that next comment is connected with next ply ',
+                rate: 'rate',
+                whiteSide: true,
+                from: 18,
+                to: 9,
+                position: {
+                    whites: [1,2,3,4,5,6,7,8,14,11,12],
+                    whiteKings: [],
+                    blacks: [32,31,30,29,28,27,26,25,24,23,22,9],
+                    blackKings: []
+                },
+                alternatives: []
+            }));
+            this.collection.add(new App.Models.PlyDTO({
+                index: 6,
+                commentBefore: 'now lets look at impossible ply',
+                commentAfter: 'WOWOWO, WHAT IS THIS?',
                 rate: 'rate',
                 whiteSide: false,
                 from: 0,
@@ -113,12 +138,27 @@ $(function(){
         },
         insertPlyIntoStepsSidebar: function (ply,sep) {
             var listEl = this.determineListEl(ply);
-            $('#game-steps').append('<li id="' + ply.index + '-step" class="list-element-ply">'+ listEl + sep +'</li>');
+            var stepNum = '';
+
+            if(ply.whiteSide) {
+                stepNum = Math.ceil(ply.index/2) + '. ';
+                sep = " ";
+            }
+
+            if(ply.commentBefore != undefined)
+                $('#game-steps').append('<li id="' + ply.index + '-commentBefore" class="list-element-comment">[ '
+                     + ply.commentBefore +' ]</li>');
+
+            $('#game-steps').append('<li id="' + ply.index + '-step" class="list-element-ply">'+ stepNum + listEl + sep +'</li>');
+
+            if(ply.commentAfter != undefined)
+                $('#game-steps').append('<li id="' + ply.index + '-commentAfter" class="list-element-comment">[ '
+                     + ply.commentAfter +' ]</li>');
         },
         determineListEl: function (ply) {
             var from = this.convert10x10to8x8(ply.from);
             var to = this.convert10x10to8x8(ply.to);
-            return from.horizontalCoordinate + from.verticalCoordinate + " - " + to.horizontalCoordinate + to.verticalCoordinate;
+            return from.horizontalCoordinate + from.verticalCoordinate + "-" + to.horizontalCoordinate + to.verticalCoordinate;
         },
         convert10x10to8x8: function (coordinate10x10) {
             //hor array just a wow mind games 9k
