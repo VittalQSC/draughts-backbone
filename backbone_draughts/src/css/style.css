@@ -19,15 +19,19 @@
 	border: 2px solid black;
 }
 
-.list-element-ply {
+.list-element-ply, .list-element-ply-alternative {
 	display: inline-block;
 	margin-right: 3px;
 	margin-left: 3px;
 	background: powderblue;
 }
 
-.list-element-ply:hover {
-	opacity: 0.6;
+.list-element-ply:hover, .list-element-ply-alternative:hover  {
+	opacity: 0.8;
+}
+
+.list-element-ply-alternative {
+	background: yellow;
 }
 
 .list-element-comment {

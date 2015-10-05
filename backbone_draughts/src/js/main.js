@@ -122,7 +122,31 @@ $(function(){
                     blacks: [],
                     blackKings: [9,10,11,14]
                 },
-                alternatives: [new App.Models.PlyDTO(), new App.Models.PlyDTO()]
+                alternatives: [new App.Models.PlyDTO({
+                    index: 6,
+                    whiteSide: true,
+                    from: 22,
+                    to: 18,
+                    position: {
+                        whites: [1,2,3,4,8,9,10,11,12],
+                        whiteKings: [5],
+                        blacks: [32,31,30,29,28,24,23,22,21],
+                        blackKings: [6]
+                    },
+                    alternatives: undefined
+                }), new App.Models.PlyDTO({
+                    index: 7,
+                    whiteSide: false,
+                    from: 22,
+                    to: 18,
+                    position: {
+                        whites: [1,2,3,4,5,6],
+                        whiteKings: [32],
+                        blacks: [24,23,22,21],
+                        blackKings: [31]
+                    },
+                    alternatives: undefined
+                })]
             }));
 
 
@@ -133,12 +157,14 @@ $(function(){
             var sep = ',';
             for(var i = 0; i < this.collection.length; i++) {
                 if(i == this.collection.length-1) sep = '.';
-                this.insertPlyIntoStepsSidebar(this.collection.at(i).attributes, sep);
+                this.insertPlyIntoStepsSidebar(this.collection.at(i).attributes, sep,'#game-steps', false);
             }
         },
-        insertPlyIntoStepsSidebar: function (ply,sep) {
+        insertPlyIntoStepsSidebar: function (ply,sep,appendLocation, isAlternative) {
             var listEl = this.determineListEl(ply);
             var stepNum = '';
+            var classPostfix = '';
+            if(isAlternative) classPostfix = '-alternative';
 
             if(ply.whiteSide) {
                 stepNum = Math.ceil(ply.index/2) + '. ';
@@ -146,18 +172,29 @@ $(function(){
             }
 
             if(ply.commentBefore != undefined)
-                $('#game-steps').append('<li id="' + ply.index + '-commentBefore" class="list-element-comment">[ '
+                $(appendLocation).append('<li id="' + ply.index + '-commentBefore" class="list-element-comment'+ classPostfix +'">[ '
                      + ply.commentBefore +' ]</li>');
 
-            $('#game-steps').append('<li id="' + ply.index + '-step" class="list-element-ply">'+ stepNum + listEl + sep +'</li>');
+            $(appendLocation).append('<li id="' + ply.index + '-step" class="list-element-ply'+ classPostfix +'">'+ stepNum + listEl + sep +'</li>');
 
             if(ply.commentAfter != undefined)
-                $('#game-steps').append('<li id="' + ply.index + '-commentAfter" class="list-element-comment">[ '
+                $(appendLocation).append('<li id="' + ply.index + '-commentAfter" class="list-element-comment'+ classPostfix +'">[ '
                      + ply.commentAfter +' ]</li>');
 
-            if(ply.alternatives != undefined)
-                $('#game-steps').append('<li id="' + ply.index + '-alternatives" class="list-element-alternative">[[ '
-                    + ply.alternatives +' ]]</li>');
+            if(ply.alternatives != undefined) {
+                $(appendLocation).append('<li id="' + ply.index + '-alternatives" class="list-element-alternative'+ classPostfix +'"></li>');
+
+                var alternative = $('#' + ply.index + '-alternatives');
+
+                alternative.append('{ ');
+                var sep = ',';
+                for(var i = 0; i < ply.alternatives.length; i++ ) {
+                    if(i == ply.alternatives.length-1) sep = '.';
+                    this.insertPlyIntoStepsSidebar(ply.alternatives[i].attributes,sep,alternative,true);
+                }
+
+                alternative.append(' }');
+            }
         },
         determineListEl: function (ply) {
             var from = this.convert10x10to8x8(ply.from);
@@ -220,7 +257,7 @@ $(function(){
         events: {
             "click #next-step"   : "nextStep",
             "click #prev-step"   : "prevStep",
-            
+
         },
         nextStep: function () {
             if(this.currentStep < this.collection.length) {
